@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title></title>
+      <link rel='stylesheet' href='//cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.min.css'/>
+    <script src="//cdn.bootcss.com/jquery/2.1.4/jquery.min.js"></script>
+    <script src="//cdn.bootcss.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+
+  </head>
+  <body class="container">
+
+
+      <ul class="nav nav-pills" role="tablist">
+        <% if(logined){ %>
+          <li role="presentation"><a href="javascript:;" data-toggle="modal" data-target="#myModal">添加</a></li>
+          <li role="presentation"><a href="/logout">退出</a></li>
+          <%}else{%>
+          <li role="presentation"><a href="javascript:;" data-toggle="modal" data-target="#loginDialog">登陆</a></li>
+         <%}%>
+
+    </ul>
+    <form action="/login" method="post" id="loginDialogForm">
+      <div id="loginDialog" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <h4 class="modal-title">Modal title</h4>
+            </div>
+            <div class="modal-body">
+              <div class="form-group">
+                <label for="loginname">登录名</label>
+                <input type="text" class="form-control" id="loginname" name="loginname" placeholder="please input loginname">
+              </div>
+               <div class="form-group">
+                <label for="password">密码</label>
+                <input type="text" class="form-control" id="password" name="password" placeholder="password">
+              </div>
+               <div class="form-group">
+                <label for="vnum"><img src="/refresh" /></label>
+                <input type="text" class="form-control" id="vnum" name="vnum" placeholder="图片验证码">
+              </div>
+
+
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+              <input type="submit" class="btn btn-primary" value="登录" ／>
+            </div>
+          </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+      </div><!-- /.modal -->
+    </form>
+    <form action="/add" method="post">
+      <div id="myModal" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <h4 class="modal-title">Modal title</h4>
+            </div>
+            <div class="modal-body">
+              <div class="form-group">
+                <label for="title">标题</label>
+                <input type="text" class="form-control" id="title" name="title" placeholder="TITLE">
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+              <input type="submit" class="btn btn-primary" value="添加" ／>
+            </div>
+          </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+      </div><!-- /.modal -->
+    </form>
+
+     <form action="/update" method="post">
+      <div id="myModal2" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <h4 class="modal-title">Modal title</h4>
+            </div>
+            <div class="modal-body">
+              <div class="form-group">
+                <label for="title">标题</label>
+                <input type="hidden" id="updateIndex" name="index"></input>
+                <input type="text" id="updateTitle" class="form-control" id="title" name="title" placeholder="TITLE">
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+              <input type="submit" class="btn btn-primary" value="更改" ／>
+            </div>
+          </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+      </div><!-- /.modal -->
+    </form>
+
+    <ul class="list-group">
+      <% list.forEach(function(article, index){ %>
+          <li class="list-group-item"><%= article.title%>
+
+        <%if(logined){%>
+          <a href="/del?index=<%= index%>">删除</a>
+          <a href="#" onclick="edit(<%= index%>)" data-toggle="modal" data-target="#myModal2">更改</a>
+        <%}%>
+          </li>
+      <%})%>
+    </ul>
+    <script type="text/javascript">
+      function edit(index){
+        $.get('/get/' + index, function(result){
+          $('#updateIndex')[0].value = index;
+          $('#updateTitle')[0].value = result.title;
+        });
+      }
+
+      $('#loginDialogForm')[0].onsubmit = function(event){
+        event.preventDefault();
+        $.post('/login', {
+          loginname: $('#loginname')[0].value,
+          password: $('#password')[0].value,
+          vnum: $('#vnum')[0].value
+        }, function(result){
+            if(result === 'success'){
+              window.location.reload();
+            }else{
+              alert('login error');
+            }
+        });
+        return false;
+      }
+
+    </script>
+  </body>
+</html>
